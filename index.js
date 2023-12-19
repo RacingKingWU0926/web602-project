@@ -102,6 +102,11 @@ app.get('/replies', (req, res) => {
     res.send("This is the GET /replies page.")
 });
 
+app.get('/user-info', connectEnsureLogin.ensureLoggedIn(), (req, res) => {
+    res.json({ user: req.user });
+});
+
+// Start the app
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

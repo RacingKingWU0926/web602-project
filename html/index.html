@@ -6,22 +6,23 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-widthm initial-scale=1.0">
   <title>Home</title>
-  <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
-  <div id="welcome-message">
-    <h1>This is the index page.</h1>
-  </div>
+  <h1>This is the index page.</h1>
+  <div id="welcome-message"></div>
 
   <script>
-    const req = new XMLHttpRequest();
-    req.onreadystatechange = function() {
-      if (req.readyState == 4 && req.status == 200) {
-        const user = JSON.parse(req.response).user;
-        document.getElementById("welcome-message").innerText = `Welcome ${user.username}!`;
-      }
-    }
+    window.onload = function() {
+      fetch('/user-info')
+        .then(response => response.json())
+        .then(data => {
+          if (data.user && data.user.username) {
+            document.getElementById("welcome-message").innerHTML = `Welcome ${data.user.firstName}!`;
+          }
+        })
+        .catch(error => console.error('Error:', error));
+    };
   </script>
 </body>
 
