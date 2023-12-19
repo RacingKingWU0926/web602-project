@@ -2,18 +2,21 @@ const mongoose = require('mongoose');
 
 const replySchema = new mongoose.Schema({
   author: {
-    type: String,
-    trim: true,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    trim: true
   },
   content: {
     type: String,
     trim: true,
+    required: true
   },
-  discussionID: {
-    type: Number
+  discussionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Question'  // reference the questions collection
   }
 },
   { timestamps : true }
 );
 
-module.exports = mongoose.model('reply', replySchema);
+module.exports = mongoose.model('Reply', replySchema);
