@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Discussion</title>
+</head>
+<body>
+    <h1>Here is the discussion question:</h1>
+    <div id="questionText"></div>
+    <button id="replyButton">Reply</button>
+    <div id="replyForm" style="display:none;">
+        <form id="replyFormElement" action="/reply" method="post">
+            <input type="hidden" name="discussionId" value="6581680d03976754584a7dd4"> <!-- The discussion ID -->
+            <textarea id="replyContent" name="content"></textarea>
+            <button type="submit">Submit Reply</button>
+        </form>
+        <div id="wordCountMessage" style="color: red;"></div>
+    </div>
+
+    <script>
+        // reply button
+        document.getElementById('replyButton').addEventListener('click', function() {
+            var replyForm = document.getElementById('replyForm');
+            if (replyForm.style.display === 'none') {
+                replyForm.style.display = 'block';
+            } else {
+                replyForm.style.display = 'none';
+            }
+        });
+
+        // load question text
+        window.onload = function() {
+            const queryParams = new URLSearchParams(window.location.search);
+            const questionId = queryParams.get('qid');
+    
+            fetch(`/get-question?qid=${questionId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Question not found');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('questionText').innerText = data.questionText;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('questionText').innerText = 'Error loading question.';
+                });
+        };
+
+        // word count
+        document.getElementById('replyFormElement').addEventListener('submit', function(event) {
+        var content = document.getElementById('replyContent').value;
+        var wordCount = content.split(/\s+/).filter(function(word) { return word.length > 0 }).length;
+
+        if (wordCount < 250) {
+            document.getElementById('wordCountMessage').innerText = `Discussion post must have 250 words or above. Current count is ${wordCount}.`;
+            event.preventDefault(); // Prevent form submission
+        } else {
+            document.getElementById('wordCountMessage').innerText = "";
+        }
+    });
+    </script>
+    
+</body>
+</html>

@@ -11,7 +11,7 @@ const replySchema = new mongoose.Schema({
     trim: true,
     required: true
   },
-  discussionId: {
+  questionId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Question'  // reference the questions collection
   }

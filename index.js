@@ -28,7 +28,7 @@ passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-// Routes
+// Routes for sign up and log in
 const connectEnsureLogin = require('connect-ensure-login');
 
 app.get('/', connectEnsureLogin.ensureLoggedIn(), (req, res) => {
@@ -63,7 +63,6 @@ app.post('/signup', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-    // Login logic here
     res.sendFile('html/login.html', {root: __dirname});
 });
 
@@ -96,18 +95,65 @@ app.post('/login', (req, res, next) => {
     }) (req, res, next);
 })
 
-app.get('/discuss', (req, res) => {
-    // Discussion page logic here
-    res.send("This is the GET /discuss page.")
-});
-
-app.get('/replies', (req, res) => {
-    // Replies page logic here
-    res.send("This is the GET /replies page.")
-});
-
 app.get('/user-info', connectEnsureLogin.ensureLoggedIn(), (req, res) => {
     res.json({ user: req.user });
+});
+
+// Routes for the main reply feature
+const Reply = require('./models/reply');
+const Question = require('./models/question');
+
+app.get('/discuss', connectEnsureLogin.ensureLoggedIn(), (req, res) => {
+    res.sendFile('html/discuss.html', { root: __dirname });
+});
+
+app.get('/get-question', connectEnsureLogin.ensureLoggedIn(), async (req, res) => {
+    const questionId = req.query.qid;
+    try {
+        const question = await Question.findById(questionId);
+        if (!question) {
+            return res.status(404).send(`Discussion question ${questionId} not found.`);
+        }
+        res.json({ questionText: question.content });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error loading the discussion question.");
+    }
+});
+
+app.post('/reply', connectEnsureLogin.ensureLoggedIn(), async (req, res) => {
+    try {
+        const newReply = new Reply({
+            content: req.body.content,
+            author: req.user._id,
+            discussionId: req.body.discussionId
+        });
+
+        await newReply.save();
+        res.redirect('/replies');
+    } catch (err) {
+        console.error(err);
+        res.redirect(`/discuss?qid=${req.body.discussionId}`);
+    }
+});
+
+
+app.get('/replies', connectEnsureLogin.ensureLoggedIn(), async (req, res) => {
+    try {
+        const userReply = await Reply.findOne({ author: req.user._id });
+
+        if (!userReply) {
+            // User has not submitted any replies
+            return res.send("Please submit a response to see other students' replies.");
+        }
+
+        // User has submitted a reply, fetch and display all replies
+        const replies = await Reply.find({}).populate('author');
+        res.json(replies); // or render a page with the replies
+    } catch (err) {
+        console.error(err);
+        return res.redirect('/discuss?qid=6581680d03976754584a7dd4'); // Include the correct question ID
+    }
 });
 
 // Start the app
