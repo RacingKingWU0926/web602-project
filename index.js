@@ -16,7 +16,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const expressSession = require('express-session')({
     secret: "secret",  // replace with a long random string
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: true,
+    cookie: {
+        secure: false,
+        maxAge: 3600000  // 1 hr
+    }
 });
 app.use(expressSession);
 app.use(passport.initialize());
