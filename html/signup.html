@@ -9,13 +9,23 @@
 </head>
 
 <body>
-  <form action="/login" method="post">
+  <form action="/signup" method="post">
     <div class="title">
-      <h3>Login</h3>
+      <h3>Sign Up</h3>
     </div>
     <div class="field">
-      <label>Username</label>
-      <input type="text" name="username" required>
+      <label>First Name</label>
+      <input type="text" name="firstName" required>
+    </div>
+
+    <div class="field">
+      <label>Last Name</label>
+      <input type="text" name="lastName" required>
+    </div>
+
+    <div class="field">
+      <label>Email (this will be your username)</label>
+      <input type="email" name="username" required>
     </div>
 
     <div class="field">
@@ -24,7 +34,7 @@
     </div>
 
     <div class="field">
-      <input type="submit" class="submit-btn" value="Login" required>
+      <input type="submit" class="submit-btn" value="Sign Up" required>
     </div>
 
     <label id="error-message"></label>
