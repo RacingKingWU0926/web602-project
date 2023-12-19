@@ -11,8 +11,10 @@
 <body>
   <h1>This is the index page.</h1>
   <div id="welcome-message"></div>
+  <button id="logout-button">Logout</button>
 
   <script>
+    // welcome message
     window.onload = function() {
       fetch('/user-info')
         .then(response => response.json())
@@ -23,7 +25,19 @@
         })
         .catch(error => console.error('Error:', error));
     };
+
+    // logout button
+    document.getElementById("logout-button").addEventListener("click", function() {
+    fetch('/logout', { method: 'POST' })
+      .then(response => {
+        if (response.ok) {
+            window.location.href = '/';
+        }
+      })
+      .catch(error => console.error('Error:', error));
+  });
   </script>
+
 </body>
 
 </html>
